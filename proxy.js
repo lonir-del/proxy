@@ -1,6 +1,13 @@
 export default async function handler(req, res) {
+  // 🔹 CORS headers SEMPRE no início
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+  // 🔹 Preflight do Bubble (OBRIGATÓRIO)
   if (req.method === "OPTIONS") {
-    return res.status(200).end();
+    res.status(200).end();
+    return;
   }
 
   const targetUrl =
@@ -15,8 +22,9 @@ export default async function handler(req, res) {
       body: JSON.stringify(req.body)
     });
 
-    const text = await response.text();
-    res.status(response.status).send(text);
+    const data = await response.text();
+
+    res.status(200).send(data);
   } catch (err) {
     res.status(500).json({
       error: "Erro no proxy",
